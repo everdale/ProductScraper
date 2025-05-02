@@ -132,4 +132,12 @@ dmypy.json
 
 # Project specific
 *.db
-logs/ 
+logs/
+.gitmonitor.json
+mcp.pid
+
+# .NET build artifacts
+bin/
+obj/
+dotnet8-mcp/bin/
+dotnet8-mcp/obj/ 
