@@ -18,9 +18,11 @@ $newState = @{}
 $remoteSummary = @()
 
 # Step 3: Check each remote branch for new branches or commits
-$remotes = git branch -r --format='%(refname:short)' | Where-Object { $_ -like 'origin/*' -and $_ -ne 'origin/HEAD' }
+$remotes = git branch -r --format='%(refname:short)' |
+    Where-Object { $_ -like 'origin/*' -and $_ -notmatch '^origin/HEAD$' }
 foreach ($remote in $remotes) {
     $branch = $remote -replace '^origin/', ''
+    if ($branch -eq 'HEAD') { continue }
     $sha = git rev-parse $remote
     $newState[$branch] = $sha
 
@@ -129,8 +131,9 @@ if ($CommitMessage) {
 }
 
 # Step 7: compile summary output
-$orderedRemoteTable = $orderedRemoteTable  # no header, table prints immediately
+Write-Host '```text'
 $orderedRemoteTable | Format-Table Branch,Status,Age,Commits -AutoSize
+Write-Host '```'
 Write-Host ''
 Write-Host '=== Local Sync Summary ==='
 if ($pushSummary) { Write-Host "- $pushSummary" }
