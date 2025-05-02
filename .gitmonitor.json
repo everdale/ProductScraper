@@ -1,10 +1,9 @@
 {
+  "master": "04ceaa2361615c6f3d009901b905307fe81a602e",
   "Hans": "bf79900a9fac9d12ff22b94edef404386aa87ce1",
   "bassel": "cc3466e1f6453c0dfbfc2be8eea2b9a9cddada97",
   "basselMcpServer": "aeb8b4cd6e39d55d6842ec7e1fb4832285e7ee44",
-  "master": "04ceaa2361615c6f3d009901b905307fe81a602e",
-  "Jonathan": "aaf89b02c970dcbefd309d3ccaf918e747a242d8",
-  "HEAD": "04ceaa2361615c6f3d009901b905307fe81a602e",
+  "hakan-octopus-mcp": "8645b99a476632b23d7a769cb437947c6f8960f0",
   "MCP_Octopus_Experten": "bf79900a9fac9d12ff22b94edef404386aa87ce1",
-  "hakan-octopus-mcp": "dffb3e6f4ae8c8e04ca7da1a078db268e9f18069"
+  "Jonathan": "aaf89b02c970dcbefd309d3ccaf918e747a242d8"
 }
