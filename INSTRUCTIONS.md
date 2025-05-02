@@ -14,6 +14,8 @@ The Svea AI Application is a backend system built with Supabase and Python that 
 - **Regular Updates**: Fetch regularly to stay in sync with remote repository
 - **Branch Management**: Create feature branches as needed and merge when complete
 - **Avoid Advanced Git Operations**: Do not perform rebase, revert, or other complex operations without explicit user permission
+- **Commit After Milestones**: After completing each coherent feature or fix, commit your changes with a clear, descriptive message and push to the remote repository.
+- **Auto-Commit on Breaks**: When the user explicitly signals a pause (e.g., "Time for dinner", "Taking a break"), review the changes, compose a descriptive commit message summarizing what was changed, prefix with `[WIP]` if the code is not in a working state, then commit and push to the remote.
 
 ### Code Quality
 - **File Size**: Keep files under 300 lines of code

@@ -14,23 +14,34 @@ Simply ask the agent to start the application, and it will:
 ### Phase 1: Initial Setup
 - [x] Create project structure
 - [x] Define dependencies
-- [ ] Create .NET 8 C# MCP skeleton and test endpoint
-- [ ] Set up Supabase database
+- [x] Create .NET 8 generic MCP skeleton with test and execute endpoints
+- [x] Add PowerShell lifecycle (start/stop) and invocation scripts
 
-### Phase 2: Core Functionality
-- [ ] Implement authentication
-- [ ] Create basic data models
-- [ ] Develop API endpoints
+### Phase 2: Core MCP Modules
+- [ ] Define and scaffold hosted MCP (production service)
+- [ ] Define and scaffold developer-tool MCP (local tooling for building hosted MCPs)
+- [ ] Implement initial tool handlers (e.g. echo, ping)
 
-### Phase 3: Advanced Features
-- [ ] Add real-time functionality
-- [ ] Implement advanced AI capabilities
-- [ ] Optimize performance
+### Phase 3: Modularization & Streaming
+- [ ] Support registering and running multiple MCPs in the same application
+- [ ] Add SSE or WebSocket transport for real-time streams
+- [ ] Integrate middleware for logging, validation, and authentication
 
 ### Phase 4: Testing & Deployment
-- [ ] Write comprehensive tests
-- [ ] Set up CI/CD pipeline
-- [ ] Prepare for production deployment
+- [ ] Write comprehensive unit and integration tests for each MCP module and script
+- [ ] Configure CI/CD pipelines to build, test, and deploy hosted MCP services
+- [ ] Containerize MCP modules (Docker) and publish the hosted service
+
+#### Docker Build & Run
+Once your Dockerfile is in place, build and run the container:
+```bash
+docker build -t mcp-skeleton .
+docker run --rm -d -p 5000:5000 --name mcp-skeleton mcp-skeleton
+```
+Then verify:
+```bash
+curl http://localhost:5000/mcp/test
+```
 
 ## Agent Instructions
 
