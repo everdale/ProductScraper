@@ -16,6 +16,16 @@ The Svea AI Application is a backend system built with Supabase and Python that 
 - **Avoid Advanced Git Operations**: Do not perform rebase, revert, or other complex operations without explicit user permission
 - **Commit After Milestones**: After completing each coherent feature or fix, commit your changes with a clear, descriptive message and push to the remote repository.
 - **Auto-Commit on Breaks**: When the user explicitly signals a pause (e.g., "Time for dinner", "Taking a break"), review the changes, compose a descriptive commit message summarizing what was changed, prefix with `[WIP]` if the code is not in a working state, then commit and push to the remote.
+- **Session Resumption**: When the user resumes after any break, the agent must fetch and pull the latest remote changes, inform the user of any updates (or confirm that the local branch is up to date) before proceeding with any new tasks.
+- **Repo Monitoring**: When the user requests repository status (or at session resumption), the agent will:
+  1. Fetch all remote updates (`git fetch`).
+  2. Compare each remote branch's HEAD against the last recorded state in `.gitmonitor.json` (which also tracks a timestamp).
+  3. Report any new branches or commits.
+  4. Update `.gitmonitor.json` with the current HEADs and timestamp for future comparisons.
+- **Scheduled Monitoring**: The agent can also be configured to perform repo monitoring at regular intervals (e.g., hourly). This can be done via:
+  1. An OS-level scheduler (e.g. cron, Windows Task Scheduler) that invokes a monitoring script.
+  2. An in-agent loop with a sleep/delay timer.
+- **State Tracking**: To know what's new since the last check, the agent can compare the local remote-tracking refs (e.g. `origin/main`) against its previous head. It may persist the last seen commit per branch in a simple JSON file (e.g. `.gitmonitor.json`) or unpack git's remote-tracking data directly via `git rev-list` without a separate file.
 
 ### Code Quality
 - **File Size**: Keep files under 300 lines of code

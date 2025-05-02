@@ -43,6 +43,19 @@ Then verify:
 curl http://localhost:5000/mcp/test
 ```
 
+#### Git Repository Monitoring Script
+A PowerShell script `monitor-git.ps1` is provided to detect new branches or commits:
+```powershell
+.\monitor-git.ps1
+```
+This will:
+1. Fetch all remote updates
+2. Compare remote HEADs against last run (stored in `.gitmonitor.json`)
+3. Print any new branches or commits
+4. Update the state file for the next check
+
+You can schedule this script hourly in Task Scheduler to keep you informed of repo changes.
+
 ## Agent Instructions
 
 ### Git Version Control

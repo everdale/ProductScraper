@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("McpSkeleton")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+04ceaa2361615c6f3d009901b905307fe81a602e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2f80d37a99d2d1edfc63273f1e1f07e8bbbf3ed9")]
 [assembly: System.Reflection.AssemblyProductAttribute("McpSkeleton")]
 [assembly: System.Reflection.AssemblyTitleAttribute("McpSkeleton")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
