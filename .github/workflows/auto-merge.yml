@@ -1,0 +1,47 @@
+name: Auto PR and Merge to Main
+
+on:
+  push:
+    branches:
+      - hakan-third-times-the-charm
+
+jobs:
+  create-and-merge-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      
+      - name: Create Pull Request or Auto-merge
+        run: |
+          # Setup GitHub CLI
+          gh auth setup-git
+          
+          # Check if a PR already exists
+          existing_pr=$(gh pr list --head hakan-third-times-the-charm --base main --json number --jq '.[0].number')
+          
+          if [ -z "$existing_pr" ]; then
+            # Create a new PR
+            echo "Creating a new pull request..."
+            pr_url=$(gh pr create --title "Auto PR from hakan-third-times-the-charm" \
+                                  --body "Automated Pull Request from hakan-third-times-the-charm branch" \
+                                  --base main \
+                                  --head hakan-third-times-the-charm)
+            pr_number=$(echo $pr_url | grep -o '[0-9]*$')
+          else
+            echo "Pull request #$existing_pr already exists"
+            pr_number=$existing_pr
+          fi
+          
+          # Attempt to merge the PR if it exists
+          if [ ! -z "$pr_number" ]; then
+            echo "Attempting to merge PR #$pr_number"
+            gh pr merge $pr_number --merge --delete-branch=false
+          else
+            echo "No PR number found, cannot proceed with merge"
+            exit 1
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
