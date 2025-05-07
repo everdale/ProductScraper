@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { supabase, testConnection } from './lib/supabase';
+import { testConnection } from './lib/supabase';
 
 function TestPage() {
   const [connectionStatus, setConnectionStatus] = useState('Loading...');

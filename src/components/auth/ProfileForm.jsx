@@ -48,7 +48,7 @@ export default function ProfileForm() {
     try {
       setLoading(true);
       
-      const { success, data, error: resultError } = await updateProfile({
+      const { success, error: resultError } = await updateProfile({
         profile_data: {
           ...profile?.profile_data,
           ...formData

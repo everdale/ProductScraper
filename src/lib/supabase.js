@@ -100,7 +100,7 @@ export const authHelpers = {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) return handleSupabaseError(error);
-      return { data };
+      return { success: true };
     } catch (error) {
       return handleSupabaseError(error);
     }
@@ -182,7 +182,7 @@ export const authHelpers = {
         }
       });
       if (error) return handleSupabaseError(error);
-      return { data };
+      return { success: true };
     } catch (error) {
       return handleSupabaseError(error);
     }

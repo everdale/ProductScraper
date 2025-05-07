@@ -50,7 +50,7 @@ export default function LoginForm({ onSuccess, redirectTo }) {
       setLoading(true);
       setError('');
       
-      const { success, data, error: resultError } = await signInWithProvider(provider);
+      const { success, error: resultError } = await signInWithProvider(provider);
       
       if (!success) {
         setError(resultError || `Failed to sign in with ${provider}`);
