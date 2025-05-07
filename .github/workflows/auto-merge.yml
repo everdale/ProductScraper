@@ -5,6 +5,11 @@ on:
     branches:
       - hakan-third-times-the-charm
 
+# Add explicit permissions block
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   create-and-merge-pr:
     runs-on: ubuntu-latest
