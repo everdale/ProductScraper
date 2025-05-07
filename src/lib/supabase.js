@@ -98,7 +98,7 @@ export const authHelpers = {
   // Sign in an existing user
   signIn: async (email, password) => {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) return handleSupabaseError(error);
       return { success: true };
     } catch (error) {
@@ -175,7 +175,7 @@ export const authHelpers = {
   // Handle OAuth login (Google, GitHub, etc.)
   signInWithProvider: async (provider) => {
     try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
           redirectTo: `${window.location.origin}/auth/callback`
