@@ -16,7 +16,7 @@ export default function LoginForm({ onSuccess, redirectTo }) {
     e.preventDefault();
     
     // Reset error
-    setError('');
+    setError(''); 
     
     // Validate form input
     if (!email || !password) {
