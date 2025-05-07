@@ -1,0 +1,31 @@
+# Task ID: 18
+# Title: Create Sample Product Data Script
+# Status: pending
+# Dependencies: 11
+# Priority: high
+# Description: Develop a script to populate the database with demo data
+# Details:
+Create a script that populates the Supabase database with sample product data:
+
+1. Data Generation:
+   - Generate realistic product data for multiple categories (e.g., electronics, home goods, tools)
+   - Create varied product examples with different attributes and specifications
+   - Include realistic pricing, descriptions, and specifications
+   - Generate or source product images (can use placeholder image services)
+
+2. Script Features:
+   - Connect to Supabase and insert data into the products table
+   - Support for running multiple times without creating duplicates
+   - Include command-line options for controlling quantity and categories
+   - Add logging and error handling
+
+3. Data Quality:
+   - Ensure generated data includes all necessary attributes for the AI assistant to work
+   - Create relationships between similar products for comparison testing
+   - Maintain consistency in attribute formats across similar products
+   - Include varied product types to test the flexibility of the system
+
+This script will serve as a backup if the crawler development faces challenges and will provide consistent test data for development.
+
+# Test Strategy:
+Verify the script successfully populates the database with the specified number of products. Check that the data appears correctly in the frontend. Test that the data is suitable for AI assistant queries and product comparisons. 

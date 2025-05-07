@@ -1,0 +1,125 @@
+<context>
+# Overview  
+Svea AI Application is an intelligent, domain-agnostic product assistant designed to help users understand, analyze, and purchase products from all types of web stores - from B2C electronics to B2B merchandise. The platform aims to offer a universal shopping experience where an AI assistant can analyze and compare products through a user-friendly interface.
+
+# Core Features  
+- **Universal Product Understanding**: AI-powered system that can comprehend and analyze products across different categories and domains
+- **Flexible Data Collection**: Crawling capabilities to extract product information from various e-commerce websites
+- **User Authentication**: Secure user management with profile capabilities
+- **Product Comparison**: Ability to compare similar products based on attributes and specifications
+- **AI Assistant**: Natural language interaction for product queries and recommendations
+- **Product Monitoring**: Tracking prices and availability changes for products of interest
+
+# User Experience  
+- **Primary Users**: Consumers making purchase decisions and business buyers researching products
+- **Key User Flow**:
+  1. User registers/logs in to the platform
+  2. User asks questions about products or requests comparisons
+  3. System retrieves relevant product data and presents intelligent analysis
+  4. User can save products, monitor prices, or proceed to purchase
+- **UI/UX Considerations**: Clean, intuitive interface with focus on the conversational AI component
+</context>
+<PRD>
+# Technical Architecture  
+## System Components
+- **Authentication System**: Supabase-based user management and authentication
+- **Data Collection Engine**: Web crawler with rate limiting and robots.txt compliance
+- **Product Database**: Structured storage for normalized product data
+- **API Layer**: FastAPI endpoints for product retrieval and search
+- **AI Integration**: LLM-powered assistant for product understanding
+- **Frontend Application**: React-based responsive interface
+
+## Data Models
+- **User Model**: Basic profile information and authentication data
+- **Product Model**: Flexible schema to accommodate products from different categories
+  - Core attributes: name, description, price, URL, image
+  - Category-specific attributes: stored as structured JSON
+- **Crawling Config**: Settings for different website structures
+
+## APIs and Integrations
+- **Authentication API**: Signup, login, password reset
+- **Product API**: Search, filtering, comparison endpoints
+- **AI Assistant API**: Natural language processing for product queries
+- **External E-commerce Integration**: Direct links to product pages
+
+## Infrastructure Requirements
+- **Backend**: Python FastAPI application
+- **Frontend**: React SPA with responsive design
+- **Database**: Supabase for user data and product information
+- **AI**: Integration with OpenAI or equivalent LLM provider
+- **Deployment**: Docker containers for backend and frontend
+
+# Development Roadmap  
+## MVP (Immediate Priority)
+- Basic user authentication with Supabase
+- Product crawler for a single e-commerce site
+- Product API with basic search/filtering
+- Simple AI assistant for product queries
+- Basic React frontend with auth and chat interface
+- Simple product comparison functionality
+
+## Phase 2 Enhancements
+- Support for multiple e-commerce sites
+- Advanced product comparison with visual representation
+- Personalized product recommendations
+- Product monitoring and price alerts
+- Enhanced AI understanding of domain-specific terminology
+
+## Phase 3 Extensions
+- Conversational product advisor
+- Order management integrations
+- Cross-site user account linking
+- Automated product research summaries
+- Mobile application
+
+# Logical Dependency Chain
+## Foundation Components (Build First)
+1. Supabase project setup and database schema
+2. User authentication system
+3. Basic product crawler
+4. Product data schema and storage
+
+## Core Functionality (Build Second)
+5. Product API endpoints
+6. AI assistant integration
+7. Product comparison logic
+8. React frontend components
+
+## Integration Layer (Build Third)
+9. Connect frontend to authentication
+10. Implement AI chat interface
+11. Connect product data to frontend
+12. Deploy complete system
+
+# Risks and Mitigations  
+## Technical Challenges
+- **Risk**: Web crawling may break if site structures change
+  **Mitigation**: Implement adaptive crawling with structure versioning
+
+- **Risk**: LLM costs could escalate with heavy usage
+  **Mitigation**: Implement caching and optimize prompt engineering
+
+- **Risk**: Handling diverse product categories may be complex
+  **Mitigation**: Start with a single category and expand gradually
+
+## Resource Constraints
+- **Risk**: Limited development time for full feature set
+  **Mitigation**: Focus on core MVP features, then expand iteratively
+
+- **Risk**: Integration with multiple e-commerce platforms
+  **Mitigation**: Prioritize most popular platforms, create extensible architecture
+
+# Appendix  
+## MVP Success Criteria
+- Users can successfully register and log in
+- System can extract product data from at least one e-commerce site
+- Users can query products via text and receive meaningful responses
+- Basic product comparison functionality works
+- Clean, responsive user interface
+
+## Future Considerations
+- Potential for B2B partnerships with e-commerce platforms
+- Integration with enterprise procurement systems
+- Advanced analytics on shopping behavior
+- Multi-language support
+</PRD> 

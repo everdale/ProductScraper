@@ -1,0 +1,30 @@
+# Task ID: 13
+# Title: Create Basic Product Crawler
+# Status: pending
+# Dependencies: 11
+# Priority: high
+# Description: Develop a web crawler for extracting product data from an e-commerce site
+# Details:
+Build a simple web crawler that can extract product information from a single e-commerce site (e.g., Kjell.com):
+
+1. Core Functionality:
+   - Implement proper rate limiting to respect the site's resources
+   - Add robots.txt compliance to follow site crawling rules
+   - Create a mechanism to handle pagination for product listings
+   - Develop HTML parsing logic to extract product details
+
+2. Data Extraction:
+   - Extract product name, price, description, specifications, and image URLs
+   - Parse and normalize product attributes
+   - Handle different product data formats
+   - Standardize extracted data to fit our database schema
+
+3. Storage Integration:
+   - Store extracted data in the Supabase products table
+   - Implement proper error handling for failed extractions
+   - Add logging for tracking crawler performance
+
+Start with a single e-commerce site and ensure thorough extraction of product details.
+
+# Test Strategy:
+Verify the crawler can successfully extract information from at least 20 different products with accurate data. Test crawling from multiple categories to ensure the extraction logic works across different product types. Confirm that the data is properly stored in the database with all required fields. 

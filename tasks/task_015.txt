@@ -1,0 +1,36 @@
+# Task ID: 15
+# Title: Implement Basic AI Assistant
+# Status: pending
+# Dependencies: 14
+# Priority: high
+# Description: Create a simple AI assistant for answering product questions
+# Details:
+Develop a basic AI assistant that can answer questions about products:
+
+1. LLM Integration:
+   - Set up connection to an LLM provider (e.g., OpenAI API)
+   - Create an endpoint to handle user queries about products
+   - Implement secure API key management and usage tracking
+
+2. Prompt Engineering:
+   - Design effective prompt templates for product queries
+   - Create a system that combines user questions with product data
+   - Implement context handling for follow-up questions
+   - Ensure responses are helpful and accurate
+
+3. Query Processing:
+   - Parse natural language queries to extract key information
+   - Map queries to appropriate product data in the database
+   - Format product information for inclusion in prompts
+   - Implement response parsing and formatting
+
+4. Features:
+   - Product information lookup
+   - Basic comparisons between similar products
+   - Answering questions about features, specifications, and pricing
+   - Handling ambiguous or incomplete questions
+
+Focus on creating a simple but effective assistant that provides helpful responses about products in the database.
+
+# Test Strategy:
+Test with various product-related questions and verify the accuracy and helpfulness of responses. Evaluate the system's ability to handle different query types, including specific product lookups, comparison requests, and general product information questions. 

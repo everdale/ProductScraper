@@ -1,0 +1,30 @@
+# Task ID: 11
+# Title: Set Up Supabase Project
+# Status: done
+# Dependencies: None
+# Priority: high
+# Description: Create and configure the Supabase project for user management and product data
+# Details:
+Create a new Supabase project for the Svea AI Application. Configure authentication settings to allow email/password login. Set up database tables for users and products with the following schema:
+
+1. Users Table:
+   - id (primary key)
+   - email
+   - created_at
+   - profile_data (JSON)
+
+2. Products Table:
+   - id (primary key)
+   - name
+   - description
+   - price
+   - image_url
+   - category
+   - attributes (JSON for category-specific properties)
+   - created_at
+   - source_url (the URL of the product on the original e-commerce site)
+
+Create necessary indexes for efficient queries. Configure row-level security policies to protect user data.
+
+# Test Strategy:
+Verify successful connection to Supabase from the application. Test authentication flows (signup, login, password reset). Confirm database tables are properly created with correct schemas. 

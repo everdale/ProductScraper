@@ -1,0 +1,31 @@
+# Task ID: 16
+# Title: Create Simple Product Comparison
+# Status: pending
+# Dependencies: 14
+# Priority: medium
+# Description: Implement functionality to compare similar products
+# Details:
+Develop a simple product comparison feature:
+
+1. Backend Logic:
+   - Create algorithms to identify similar products for comparison
+   - Implement attribute matching across different products
+   - Develop comparison matrix generation for key attributes
+   - Create API endpoints to retrieve comparison data
+
+2. Comparison Features:
+   - Side-by-side comparison of product specifications
+   - Highlight key differences between products
+   - Support for comparing products across similar categories
+   - Format comparison results in a user-friendly structure
+
+3. Technical Implementation:
+   - Develop normalization techniques for different attribute formats
+   - Create a flexible comparison template system
+   - Implement a scoring system for determining product similarity
+   - Optimize comparison logic for performance
+
+Start with a simpler version focusing on direct attribute comparison rather than AI analysis. Design the system to be extensible for more sophisticated comparisons in future iterations.
+
+# Test Strategy:
+Test with multiple product pairs from various categories to verify meaningful comparisons are generated. Check that key differences are accurately highlighted. Verify that the comparison data is structured in a way that can be easily presented in the frontend. 
