@@ -80,7 +80,7 @@ export const authHelpers = {
         };
       }
       
-      const { data, error } = await supabase.auth.signUp({ 
+      const { error } = await supabase.auth.signUp({ 
         email, 
         password,
         options: {
@@ -89,7 +89,7 @@ export const authHelpers = {
       });
       
       if (error) return handleSupabaseError(error);
-      return { data, message: 'Verification email sent. Please check your inbox.' };
+      return { success: true, message: 'Verification email sent. Please check your inbox.' };
     } catch (error) {
       return handleSupabaseError(error);
     }
@@ -142,7 +142,7 @@ export const authHelpers = {
   // Reset password (send reset email)
   resetPassword: async (email) => {
     try {
-      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/reset-password`,
       });
       if (error) return handleSupabaseError(error);
@@ -161,7 +161,7 @@ export const authHelpers = {
         };
       }
       
-      const { data, error } = await supabase.auth.updateUser({
+      const { error } = await supabase.auth.updateUser({
         password: newPassword
       });
       
