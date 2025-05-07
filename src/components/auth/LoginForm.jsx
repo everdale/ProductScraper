@@ -125,15 +125,6 @@ export default function LoginForm({ onSuccess, redirectTo }) {
         >
           Sign in with Google
         </button>
-        
-        <button 
-          type="button" 
-          className="btn btn-oauth btn-github" 
-          onClick={() => handleOAuthLogin('github')}
-          disabled={loading}
-        >
-          Sign in with GitHub
-        </button>
       </div>
       
       <div className="auth-links">
