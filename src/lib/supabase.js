@@ -175,10 +175,15 @@ export const authHelpers = {
   // Handle OAuth login (Google, GitHub, etc.)
   signInWithProvider: async (provider) => {
     try {
+      // Log the exact redirect URL being used
+      const redirectUrl = `${window.location.origin}/auth/callback`;
+      console.log('OAuth redirectTo URL:', redirectUrl);
+      console.log('Window location origin:', window.location.origin);
+      
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`
+          redirectTo: redirectUrl
         }
       });
       if (error) return handleSupabaseError(error);
