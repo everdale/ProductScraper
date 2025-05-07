@@ -1,6 +1,6 @@
 # Task ID: 13
 # Title: Create Basic Product Crawler
-# Status: pending
+# Status: done
 # Dependencies: 11
 # Priority: high
 # Description: Develop a web crawler for extracting product data from an e-commerce site
