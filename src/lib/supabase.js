@@ -28,27 +28,123 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
-    storageKey: 'svea-auth-token',
+    storageKey: 'svea-auth',
+    storage: localStorage,
+    detectSessionInUrl: true,
+    flowType: 'implicit',
     cookieOptions: {
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'Strict',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      sameSite: 'Lax',
+      maxAge: 60 * 60 * 24 * 30, // 30 days
     },
+    debug: process.env.NODE_ENV !== 'production',
   },
+  global: {
+    fetch: (...args) => {
+      const [url, options = {}] = args;
+      
+      // Log the request in development
+      if (process.env.NODE_ENV !== 'production') {
+        console.log(`Supabase Request: ${options.method || 'GET'} ${url}`);
+        if (options.body) {
+          try {
+            console.log('Request Body:', JSON.parse(options.body));
+          } catch (e) {
+            // Ignore parsing errors
+          }
+        }
+      }
+      
+      return fetch(...args);
+    }
+  }
 });
 
-// Export the supabase client for use in other files
-export { supabase };
-
 // Helper function for handling Supabase errors consistently
-export const handleSupabaseError = (error) => {
+const handleSupabaseError = (error) => {
   console.error('Supabase Error:', error.message);
   // You can add more error handling logic here, such as sending to a monitoring service
   return { error: error.message || 'An unexpected error occurred' };
 };
 
+// Helper function to execute SQL directly (use with caution - requires appropriate permissions)
+const executeSql = async (sqlQuery) => {
+  try {
+    // First try using RPC (stored procedure) if available
+    const { data, error } = await supabase.rpc('execute_sql', { query: sqlQuery });
+    
+    if (error) {
+      console.error('Error executing SQL via RPC:', error);
+      
+      // If RPC fails, try a direct approach
+      // This might not work depending on your Supabase setup and permissions
+      // Most free/basic plans don't allow direct SQL unless using the SQL editor
+      console.log('Attempting alternative SQL execution method...');
+      
+      // This is a fallback that might not work depending on permissions
+      const { error: directError } = await supabase.from('_sql').select('*').eq('query', sqlQuery);
+      
+      if (directError) {
+        console.error('Error executing SQL directly:', directError);
+        return { 
+          error: 'Could not execute SQL. Please use the Supabase dashboard to run this SQL manually.',
+          sqlQuery
+        };
+      }
+      
+      return { success: true };
+    }
+    
+    return { success: true, data };
+  } catch (error) {
+    return handleSupabaseError(error);
+  }
+};
+
+// Helper function to create a table if it doesn't exist
+const createTableIfNotExists = async (tableName, tableSchema) => {
+  try {
+    // Check if table exists
+    const { error: checkError } = await supabase
+      .from(tableName)
+      .select('count')
+      .limit(1);
+    
+    // If table doesn't exist, create it
+    if (checkError && checkError.code === '42P01') { // PostgreSQL code for relation does not exist
+      console.log(`Table '${tableName}' does not exist. Creating it now...`);
+      
+      const sqlQuery = `
+        CREATE TABLE IF NOT EXISTS public.${tableName} (
+          ${tableSchema}
+        );
+      `;
+      
+      const { error } = await executeSql(sqlQuery);
+      
+      if (error) {
+        console.error(`Error creating table '${tableName}':`, error);
+        return { error: `Failed to create table '${tableName}': ${error.message || 'Unknown error'}` };
+      }
+      
+      console.log(`Table '${tableName}' created successfully`);
+      return { success: true };
+    }
+    
+    if (checkError) {
+      console.error(`Error checking if table '${tableName}' exists:`, checkError);
+      return { error: checkError.message };
+    }
+    
+    console.log(`Table '${tableName}' already exists`);
+    return { success: true };
+  } catch (error) {
+    return handleSupabaseError(error);
+  }
+};
+
 // Test Supabase connection
-export const testConnection = async () => {
+const testConnection = async () => {
   try {
     const { data, error } = await supabase.from('products').select('*').limit(1);
     if (error) {
@@ -64,7 +160,7 @@ export const testConnection = async () => {
 };
 
 // Comprehensive authentication helpers
-export const authHelpers = {
+const authHelpers = {
   // Sign up a new user
   signUp: async (email, password) => {
     try {
@@ -98,10 +194,18 @@ export const authHelpers = {
   // Sign in an existing user
   signIn: async (email, password) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) return handleSupabaseError(error);
-      return { success: true };
+      console.log('Attempting to sign in user:', email);
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      
+      if (error) {
+        console.error('Sign in error:', error);
+        return handleSupabaseError(error);
+      }
+      
+      console.log('Sign in successful:', data);
+      return { success: true, data };
     } catch (error) {
+      console.error('Sign in exception:', error);
       return handleSupabaseError(error);
     }
   },
@@ -179,6 +283,8 @@ export const authHelpers = {
       const redirectUrl = `${window.location.origin}/auth/callback`;
       console.log('OAuth redirectTo URL:', redirectUrl);
       console.log('Window location origin:', window.location.origin);
+      console.log('Full current URL:', window.location.href);
+      console.log(`Auth provider being used: ${provider}`);
       
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
@@ -186,9 +292,13 @@ export const authHelpers = {
           redirectTo: redirectUrl
         }
       });
-      if (error) return handleSupabaseError(error);
+      if (error) {
+        console.error('OAuth error:', error);
+        return handleSupabaseError(error);
+      }
       return { success: true };
     } catch (error) {
+      console.error('OAuth exception:', error);
       return handleSupabaseError(error);
     }
   },
@@ -213,7 +323,7 @@ function isPasswordStrong(password) {
 }
 
 // CSRF protection token
-export const generateCSRFToken = () => {
+const generateCSRFToken = () => {
   const token = Math.random().toString(36).substring(2) + Date.now().toString(36);
   if (typeof window !== 'undefined') {
     localStorage.setItem('csrf-token', token);
@@ -221,9 +331,49 @@ export const generateCSRFToken = () => {
   return token;
 };
 
-export const validateCSRFToken = (token) => {
+const validateCSRFToken = (token) => {
   if (typeof window !== 'undefined') {
     return token === localStorage.getItem('csrf-token');
   }
   return false;
+};
+
+// Helper function to check the authentication status
+const checkAuth = async () => {
+  try {
+    const { data, error } = await supabase.auth.getSession();
+    
+    if (error) {
+      console.error('Auth check error:', error);
+      return { authenticated: false, error: error.message };
+    }
+    
+    if (!data.session) {
+      console.warn('No active session found');
+      return { authenticated: false };
+    }
+    
+    console.log('Auth check successful, user authenticated:', data.session.user.id);
+    return { 
+      authenticated: true, 
+      user: data.session.user,
+      session: data.session
+    };
+  } catch (error) {
+    console.error('Exception in checkAuth:', error);
+    return { authenticated: false, error: error.message };
+  }
+};
+
+// Export all the items
+export {
+  supabase,
+  handleSupabaseError,
+  executeSql,
+  createTableIfNotExists,
+  testConnection,
+  authHelpers,
+  generateCSRFToken,
+  validateCSRFToken,
+  checkAuth
 }; 

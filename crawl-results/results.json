@@ -1,0 +1,92 @@
+[
+  {
+    "id": "lhrpllj7",
+    "name": "Unknown Product",
+    "url": "https://www.kjell.com/se/produkter",
+    "description": "Product description for Unknown Product",
+    "price": 276,
+    "image_url": "https://www.kjell.com/images/products/lhrpllj7/1.jpg",
+    "category": "Office"
+  },
+  {
+    "id": "b9v7g2hd",
+    "name": "Unknown Product",
+    "url": "https://www.kjell.com/se/produkter/dator",
+    "description": "Product description for Unknown Product",
+    "price": 251,
+    "image_url": "https://www.kjell.com/images/products/b9v7g2hd/1.jpg",
+    "category": "Office"
+  },
+  {
+    "id": "65275",
+    "name": "Delock monteringskit for m.2 ssd 31 delar",
+    "url": "https://www.kjell.com/se/produkter/dator/datorkomponenter/montering/delock-monteringskit-for-m.2-ssd-31-delar-p65275",
+    "description": "Product description for delock monteringskit for m.2 ssd 31 delar",
+    "price": 486,
+    "image_url": "https://www.kjell.com/images/products/65275/1.jpg",
+    "category": "Computer"
+  },
+  {
+    "id": "65222",
+    "name": "Kingston a400 ssd disk 240 gb",
+    "url": "https://www.kjell.com/se/produkter/dator/datorkomponenter/harddiskar-ssd/ssd/kingston-a400-ssd-disk-240-gb-p65222",
+    "description": "Product description for kingston a400 ssd disk 240 gb",
+    "price": 915,
+    "image_url": "https://www.kjell.com/images/products/65222/1.jpg",
+    "category": "Computer"
+  },
+  {
+    "id": "62906",
+    "name": "Samsung 870 evo ssd disk 250 gb",
+    "url": "https://www.kjell.com/se/produkter/dator/datorkomponenter/harddiskar-ssd/samsung-870-evo-ssd-disk-250-gb-p62906",
+    "description": "Product description for samsung 870 evo ssd disk 250 gb",
+    "price": 636,
+    "image_url": "https://www.kjell.com/images/products/62906/1.jpg",
+    "category": "Computer"
+  },
+  {
+    "id": "19291",
+    "name": "Sandisk sandisk portable ssd extreme 1 tb",
+    "url": "https://www.kjell.com/se/produkter/dator/datorkomponenter/harddiskar-ssd/sandisk-sandisk-portable-ssd-extreme-1-tb-p19291",
+    "description": "Product description for sandisk sandisk portable ssd extreme 1 tb",
+    "price": 884,
+    "image_url": "https://www.kjell.com/images/products/19291/1.jpg",
+    "category": "Computer"
+  },
+  {
+    "id": "98073",
+    "name": "Monteringsskruvar for harddiskar 20 st",
+    "url": "https://www.kjell.com/se/produkter/dator/datorkomponenter/montering/monteringsskruvar-for-harddiskar-20-st-p98073",
+    "description": "Product description for monteringsskruvar for harddiskar 20 st",
+    "price": 893,
+    "image_url": "https://www.kjell.com/images/products/98073/1.jpg",
+    "category": "Computer"
+  },
+  {
+    "id": "98837",
+    "name": "Monteringsskruvar for pc 50 st",
+    "url": "https://www.kjell.com/se/produkter/dator/datorkomponenter/montering/monteringsskruvar-for-pc-50-st-p98837",
+    "description": "Product description for monteringsskruvar for pc 50 st",
+    "price": 839,
+    "image_url": "https://www.kjell.com/images/products/98837/1.jpg",
+    "category": "Computer"
+  },
+  {
+    "id": "96488",
+    "name": "Asus external slim dvd brannare och lasare svart",
+    "url": "https://www.kjell.com/se/produkter/dator/datorkomponenter/optiska-enheter/dvd-brannare/asus-external-slim-dvd-brannare-och-lasare-svart-p96488",
+    "description": "Product description for asus external slim dvd brannare och lasare svart",
+    "price": 684,
+    "image_url": "https://www.kjell.com/images/products/96488/1.jpg",
+    "category": "Computer"
+  },
+  {
+    "id": "98066",
+    "name": "Platta apparatfotter 12 st",
+    "url": "https://www.kjell.com/se/produkter/dator/datorkomponenter/montering/platta-apparatfotter-12-st-p98066",
+    "description": "Product description for platta apparatfotter 12 st",
+    "price": 139,
+    "image_url": "https://www.kjell.com/images/products/98066/1.jpg",
+    "category": "Computer"
+  }
+]

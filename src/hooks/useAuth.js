@@ -44,6 +44,8 @@ function useProvideAuth() {
     const getInitialSession = async () => {
       try {
         setLoading(true);
+        console.log('Checking for existing session...');
+        
         const { data, error } = await authHelpers.getSession();
         
         if (!mounted) return;
@@ -53,21 +55,34 @@ function useProvideAuth() {
           setError(error.message);
           setUser(null);
           setProfile(null);
+          setLoading(false);
         } else if (data?.session?.user) {
+          console.log('Existing session found:', data.session.user);
           setUser(data.session.user);
+          
           // Fetch user's profile
-          const { data: profileData } = await profileService.getCurrentProfile();
-          if (profileData) {
-            setProfile(profileData);
+          try {
+            const { data: profileData } = await profileService.getCurrentProfile();
+            if (profileData) {
+              setProfile(profileData);
+              console.log('Profile loaded for existing session:', profileData);
+            } else {
+              console.log('No profile found for the user, may need to create one');
+            }
+          } catch (profileErr) {
+            console.error('Error fetching profile for existing session:', profileErr);
           }
+          setLoading(false);
+        } else {
+          console.log('No existing session found');
+          setUser(null);
+          setProfile(null);
+          setLoading(false);
         }
       } catch (err) {
         console.error('Auth initialization error:', err);
         if (mounted) {
           setError(err.message);
-        }
-      } finally {
-        if (mounted) {
           setLoading(false);
         }
       }
@@ -80,26 +95,46 @@ function useProvideAuth() {
       async (event, session) => {
         if (!mounted) return;
         
-        console.log(`Auth event: ${event}`);
+        console.log(`Auth event in hook: ${event}`, session);
         
         if (event === 'SIGNED_IN' && session?.user) {
+          console.log('User signed in, updating user state:', session.user);
           setUser(session.user);
           
           // Fetch user's profile
-          const { data: profileData } = await profileService.getCurrentProfile();
-          if (profileData) {
-            setProfile(profileData);
+          try {
+            const { data: profileData } = await profileService.getCurrentProfile();
+            if (profileData) {
+              console.log('User profile loaded:', profileData);
+              setProfile(profileData);
+            } else {
+              console.log('No profile data found for user');
+            }
+          } catch (err) {
+            console.error('Error fetching profile after sign in:', err);
           }
         } else if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+          console.log('User signed out or deleted, clearing state');
           setUser(null);
           setProfile(null);
+        } else if (event === 'TOKEN_REFRESHED') {
+          console.log('Token refreshed, session updated');
+          if (session?.user) {
+            setUser(session.user);
+          }
         } else if (event === 'USER_UPDATED' && session?.user) {
+          console.log('User updated, refreshing user state:', session.user);
           setUser(session.user);
           
           // Refresh profile data
-          const { data: profileData } = await profileService.getCurrentProfile();
-          if (profileData) {
-            setProfile(profileData);
+          try {
+            const { data: profileData } = await profileService.getCurrentProfile();
+            if (profileData) {
+              console.log('Updated profile loaded:', profileData);
+              setProfile(profileData);
+            }
+          } catch (err) {
+            console.error('Error fetching profile after user update:', err);
           }
         }
       }

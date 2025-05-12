@@ -5,15 +5,42 @@
  * It handles CRUD operations and common queries for products.
  */
 
-import { supabase, handleSupabaseError } from './supabase';
+import { supabase, handleSupabaseError, createTableIfNotExists } from './supabase';
 
 // Define the products table name
 const PRODUCTS_TABLE = 'products';
+
+// Define the products table schema
+const PRODUCTS_SCHEMA = `
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  description TEXT,
+  price DECIMAL(10, 2),
+  sale_price DECIMAL(10, 2),
+  image_url TEXT,
+  url TEXT,
+  category TEXT,
+  brand TEXT,
+  sku TEXT,
+  store_id UUID,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE,
+  stock_status TEXT,
+  data JSONB
+`;
 
 /**
  * Product Service for interacting with the products table
  */
 const productService = {
+  /**
+   * Ensure the products table exists
+   * @returns {Promise<{success: boolean, error: string|null}>} Success or error
+   */
+  ensureTableExists: async () => {
+    return await createTableIfNotExists(PRODUCTS_TABLE, PRODUCTS_SCHEMA);
+  },
+  
   /**
    * Fetch all products with optional filtering and pagination
    * @param {Object} options - Query options
@@ -32,6 +59,12 @@ const productService = {
     ascending = false
   } = {}) => {
     try {
+      // First ensure the table exists
+      const { success, error: tableError } = await productService.ensureTableExists();
+      if (!success) {
+        return { error: tableError };
+      }
+      
       let query = supabase
         .from(PRODUCTS_TABLE)
         .select('*')
@@ -59,6 +92,12 @@ const productService = {
    */
   getProductById: async (id) => {
     try {
+      // First ensure the table exists
+      const { success, error: tableError } = await productService.ensureTableExists();
+      if (!success) {
+        return { error: tableError };
+      }
+      
       const { data, error } = await supabase
         .from(PRODUCTS_TABLE)
         .select('*')
@@ -80,6 +119,12 @@ const productService = {
    */
   searchProducts: async (query, limit = 20) => {
     try {
+      // First ensure the table exists
+      const { success, error: tableError } = await productService.ensureTableExists();
+      if (!success) {
+        return { error: tableError };
+      }
+      
       // Using Postgres textual search capabilities
       const { data, error } = await supabase
         .from(PRODUCTS_TABLE)
@@ -101,6 +146,12 @@ const productService = {
    */
   createProduct: async (product) => {
     try {
+      // First ensure the table exists
+      const { success, error: tableError } = await productService.ensureTableExists();
+      if (!success) {
+        return { error: tableError };
+      }
+      
       const { data, error } = await supabase
         .from(PRODUCTS_TABLE)
         .insert(product)
@@ -161,6 +212,12 @@ const productService = {
    */
   getCategories: async () => {
     try {
+      // First ensure the table exists
+      const { success, error: tableError } = await productService.ensureTableExists();
+      if (!success) {
+        return { error: tableError };
+      }
+      
       // This uses PostgreSQL's aggregation functionality
       const { data, error } = await supabase
         .rpc('get_product_categories');

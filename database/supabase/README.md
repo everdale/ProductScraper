@@ -1,53 +1,49 @@
 # Supabase Setup for Svea AI Application
 
-This directory contains all the resources needed to set up and configure the Supabase project for the Svea AI application.
+This directory contains the SQL scripts needed to set up and configure your Supabase project for the Svea AI application. These scripts create the database schema, functions, and seed data for the application.
 
-## Files Included
+## SQL Files
 
-- `schema.sql`: Database schema definitions including tables, indexes, and RLS policies
-- `functions.sql`: Custom PostgreSQL functions for efficient queries
-- `seed_data.sql`: Sample data to populate the database for testing
-- `setup.js`: Interactive guide for setting up the Supabase project
+The SQL files are organized in a numbered sequence that should be executed in order:
+
+1. **01_schema.sql**: Creates the basic database structure including tables, indexes, and row-level security policies.
+2. **02_functions.sql**: Defines database functions for product search, filtering, and administrative tasks.
+3. **03_seed_data.sql**: Contains initial data to populate the database with sample products and stores.
+4. **04_crawler_integration.sql**: Provides functions to integrate the crawler functionality with Supabase.
 
 ## Setup Instructions
 
-1. **Create a Supabase Project**
+Follow these steps to set up your Supabase project:
+
+1. **Create a new Supabase project**:
    - Go to [Supabase](https://app.supabase.io/)
    - Sign in or create an account
    - Click "New Project"
-   - Enter "SveaAI" (or your preferred name) as the project name
+   - Enter your project name
    - Choose a strong database password (save it somewhere secure)
    - Select the region closest to your users
-   - Choose the free tier (or paid if needed)
+   - Choose the appropriate pricing tier
    - Click "Create new project"
 
-2. **Wait for Project Creation**
-   - This may take a few minutes
+2. **Wait for your project to be created** (this may take a few minutes)
 
-3. **Configure Authentication**
+3. **Configure Authentication**:
    - In the Supabase dashboard, go to "Authentication" > "Providers"
    - Enable "Email" provider
    - Configure any additional settings as needed (e.g., email templates)
    - Under "Authentication" > "URL Configuration" set your site URL
    - Save changes
 
-4. **Apply Database Schema**
+4. **Apply the database schema and functions**:
    - In the Supabase dashboard, go to "SQL Editor"
    - Click "New Query"
-   - Copy and paste the contents of `schema.sql`
-   - Run the query to create all tables, indexes, policies, and triggers
+   - Execute each SQL file in order:
+     1. Copy and paste the contents of `01_schema.sql` and run the query
+     2. Copy and paste the contents of `02_functions.sql` and run the query
+     3. Copy and paste the contents of `04_crawler_integration.sql` and run the query
+     4. Optionally, run `03_seed_data.sql` if you want sample data for development
 
-5. **Create Database Functions**
-   - In the SQL Editor, create a new query
-   - Copy and paste the contents of `functions.sql`
-   - Run the query to create all functions
-
-6. **Seed Test Data (Optional)**
-   - In the SQL Editor, create a new query
-   - Copy and paste the contents of `seed_data.sql`
-   - Run the query to insert sample products
-
-7. **Get API Credentials**
+5. **Get your API credentials**:
    - In the Supabase dashboard, go to "Settings" > "API"
    - Under "Project API keys", copy:
      - anon/public key (for client access)
@@ -58,53 +54,26 @@ This directory contains all the resources needed to set up and configure the Sup
      SUPABASE_ANON_KEY=your_anon_key
      ```
 
-8. **Connect to Your Application**
-   - Follow the instructions in `frontend/src/lib/supabase.js` to connect your application to Supabase
+6. **Add these variables to your .env file** in your project root.
 
-## Testing Your Setup
+7. **Connect your application to Supabase**:
+   - Follow the instructions in `src/lib/supabase.js` to connect your application to Supabase
 
-To verify your Supabase setup is working correctly:
+## Integration with Crawler
 
-1. Check that tables were created correctly:
-   - Go to "Table Editor" in the Supabase dashboard
-   - You should see `profiles` and `products` tables
+The application uses a dual-database approach:
 
-2. Verify authentication is working:
-   - Create a test user through "Authentication" > "Users" > "Add User"
-   - Check that a profile was automatically created in the `profiles` table
+1. **SQLite with Prisma**: Used by the crawler for local data storage and processing.
+2. **Supabase PostgreSQL**: Used for the main application data and user interface.
 
-3. Test Row Level Security:
-   - Try accessing the `products` table from the client API (should be allowed for reading)
-   - Try modifying a product without admin rights (should be denied)
+The crawler data can be synchronized with Supabase using the functions defined in `04_crawler_integration.sql`:
 
-## Additional Configuration
+- `sync_crawler_products`: Takes product data from the crawler and adds/updates products in Supabase
+- `update_store_status`: Updates the status of a store in the Supabase database
 
-### Creating an Admin User
-
-To create an admin user with special privileges:
-
-1. Create a user through regular signup
-2. Go to "Authentication" > "Users" in the Supabase dashboard
-3. Find the user and click "Edit"
-4. Under "Raw User Metadata", add:
-   ```json
-   {
-     "role": "admin"
-   }
-   ```
-5. This user will now have admin privileges through the RLS policies
-
-### Adding More Tables
-
-If you need to add more tables to the schema:
-
-1. Create a new SQL file (e.g., `additional_tables.sql`)
-2. Add your table definitions with proper RLS policies
-3. Apply the schema using the SQL Editor
-
-## Useful Resources
+## Additional Resources
 
 - [Supabase Documentation](https://supabase.io/docs)
-- [PostgreSQL Documentation](https://www.postgresql.org/docs/)
+- [Supabase JavaScript Client](https://supabase.io/docs/reference/javascript/supabase-client)
 - [Supabase Auth Documentation](https://supabase.io/docs/guides/auth)
 - [Row Level Security Guide](https://supabase.io/docs/guides/auth/row-level-security) 

@@ -16,6 +16,9 @@ const path = require('path');
 const ProductCrawler = require('../lib/crawler');
 const { availableConfigs } = require('../lib/crawlConfigs');
 
+// Default output directory for saving results
+const DEFAULT_OUTPUT_DIR = path.join(process.cwd(), 'crawl-results');
+
 // Parse command-line arguments
 const args = process.argv.slice(2).reduce((acc, arg) => {
   if (arg.startsWith('--')) {
@@ -25,120 +28,67 @@ const args = process.argv.slice(2).reduce((acc, arg) => {
   return acc;
 }, {});
 
-// Default values
-const DEFAULT_OUTPUT_DIR = path.join(process.cwd(), 'crawl-results');
-const DEFAULT_LIMIT = 20;
+// Log the parsed arguments for debugging
+console.log('Parsed arguments:', args);
 
 /**
- * Main function to run the crawler
+ * Display help information
  */
-async function runCrawler() {
-  try {
-    // Show help if requested
-    if (args.help) {
-      showHelp();
-      return;
-    }
-    
-    // Check for required site parameter
-    if (!args.site && !args.config) {
-      console.error('Error: Please specify a site (--site=kjell) or a config file (--config=path/to/config.json)');
-      showHelp();
-      return;
-    }
-    
-    // Load configuration
-    let siteConfig;
-    if (args.config) {
-      try {
-        const configPath = path.resolve(process.cwd(), args.config);
-        const configData = fs.readFileSync(configPath, 'utf8');
-        siteConfig = JSON.parse(configData);
-      } catch (error) {
-        console.error(`Error loading config file: ${error.message}`);
-        return;
-      }
-    } else {
-      const siteName = args.site.toLowerCase();
-      if (!availableConfigs[siteName]) {
-        console.error(`Error: Unknown site '${siteName}'. Available sites: ${Object.keys(availableConfigs).join(', ')}`);
-        return;
-      }
-      siteConfig = availableConfigs[siteName];
-    }
-    
-    // Configure the crawler
-    const crawlerConfig = {
-      concurrency: parseInt(args.concurrency) || 2,
-      delay: parseInt(args.delay) || 1000,
-      maxRetries: parseInt(args.retries) || 3,
-      timeout: parseInt(args.timeout) || 10000,
-      userAgent: args.useragent || 'SveaProductCrawler/1.0',
-      respectRobotsTxt: args.robots !== 'false',
-      saveToDatabase: args.save === true || args.save === 'true'
-    };
-    
-    console.log('Starting crawler with configuration:');
-    console.log(JSON.stringify(crawlerConfig, null, 2));
-    
-    const crawler = new ProductCrawler(crawlerConfig);
-    
-    // Determine starting URLs
-    let startUrls = args.url ? [args.url] : siteConfig.startUrls;
-    if (!startUrls || startUrls.length === 0) {
-      console.error('Error: No starting URLs provided');
-      return;
-    }
-    
-    console.log(`Starting crawl from: ${startUrls.join(', ')}`);
-    
-    // Set limit if provided
-    const limit = parseInt(args.limit) || DEFAULT_LIMIT;
-    if (limit > 0) {
-      console.log(`Limiting crawl to ${limit} products`);
-      
-      // Create a wrapper that limits the number of products
-      const originalProcessProduct = crawler.processProductPage.bind(crawler);
-      crawler.processProductPage = async function(url, config) {
-        if (this.results.length >= limit) {
-          return; // Skip if we've reached the limit
-        }
-        await originalProcessProduct(url, config);
-      };
-    }
-    
-    // Run the crawler
-    const startTime = Date.now();
-    const results = await crawler.crawl(startUrls, siteConfig);
-    const endTime = Date.now();
-    
-    console.log(`Crawl completed in ${(endTime - startTime) / 1000} seconds`);
-    console.log(`Found ${results.length} products`);
-    
-    // Save results to file if requested
-    if (args.output) {
-      await saveResults(results, args.output);
-    }
-    
-    // Print error summary
-    if (crawler.errors.length > 0) {
-      console.log(`\nEncountered ${crawler.errors.length} errors:`);
-      
-      // Group errors by type and message
-      const errorCounts = crawler.errors.reduce((acc, error) => {
-        const key = `${error.type}: ${error.error}`;
-        acc[key] = (acc[key] || 0) + 1;
-        return acc;
-      }, {});
-      
-      Object.entries(errorCounts).forEach(([error, count]) => {
-        console.log(`- ${error} (${count} occurrences)`);
-      });
-    }
-    
-  } catch (error) {
-    console.error('Error running crawler:', error);
+function showHelp() {
+  console.log('\nCrawler CLI Tool\n');
+  console.log('Usage:');
+  console.log('  node crawl.js [options]\n');
+  console.log('Options:');
+  console.log('  --site=NAME           Site to crawl (kjell, etc.)');
+  console.log('  --config=PATH         Path to JSON config file (alternative to --site)');
+  console.log('  --url=URL             Starting URL (overrides config\'s startUrls)');
+  console.log('  --limit=N             Maximum number of products to crawl');
+  console.log('  --concurrency=N       Number of concurrent requests (default: 2)');
+  console.log('  --delay=N             Delay between requests in ms (default: 1000)');
+  console.log('  --retries=N           Max retry attempts (default: 3)');
+  console.log('  --timeout=N           Request timeout in ms (default: 10000)');
+  console.log('  --useragent=STRING    User agent string');
+  console.log('  --robots=BOOLEAN      Whether to respect robots.txt (default: true)');
+  console.log('  --save                Save products to database');
+  console.log('  --output=FILENAME     Save results to JSON file');
+  console.log('  --debug               Save HTML of crawled pages for debugging');
+  console.log('  --help                Show this help message\n');
+  console.log('Examples:');
+  console.log('  node crawl.js --site=kjell --limit=10');
+  console.log('  node crawl.js --site=kjell --output=results');
+  console.log('  node crawl.js --url=https://www.kjell.com/se/produkter/dator --site=kjell --limit=5\n');
+}
+
+/**
+ * Load a site configuration
+ * @param {string} siteName - Name of the site
+ * @returns {Object} - Site configuration
+ */
+function loadSiteConfig(siteName) {
+  console.log(`Looking for config for site: '${siteName}'`);
+  console.log('Available configs:', Object.keys(availableConfigs));
+  
+  if (availableConfigs[siteName]) {
+    return availableConfigs[siteName];
   }
+  
+  throw new Error(`No configuration found for site: ${siteName}`);
+}
+
+/**
+ * Load a configuration from a JSON file
+ * @param {string} configPath - Path to the config file
+ * @returns {Object} - Configuration
+ */
+function loadConfigFile(configPath) {
+  const resolvedPath = path.resolve(configPath);
+  
+  if (!fs.existsSync(resolvedPath)) {
+    throw new Error(`Config file not found: ${resolvedPath}`);
+  }
+  
+  const config = JSON.parse(fs.readFileSync(resolvedPath, 'utf8'));
+  return config;
 }
 
 /**
@@ -178,35 +128,89 @@ async function saveResults(results, filename) {
 }
 
 /**
- * Display help information
+ * Main function to run the crawler
  */
-function showHelp() {
-  console.log(`
-Crawler CLI Tool
-
-Usage:
-  node crawl.js [options]
-
-Options:
-  --site=NAME           Site to crawl (kjell, etc.)
-  --config=PATH         Path to JSON config file (alternative to --site)
-  --url=URL             Starting URL (overrides config's startUrls)
-  --limit=N             Maximum number of products to crawl
-  --concurrency=N       Number of concurrent requests (default: 2)
-  --delay=N             Delay between requests in ms (default: 1000)
-  --retries=N           Max retry attempts (default: 3)
-  --timeout=N           Request timeout in ms (default: 10000)
-  --useragent=STRING    User agent string
-  --robots=BOOLEAN      Whether to respect robots.txt (default: true)
-  --save                Save products to database
-  --output=FILENAME     Save results to JSON file
-  --help                Show this help message
-
-Examples:
-  node crawl.js --site=kjell --limit=10
-  node crawl.js --site=kjell --output=results
-  node crawl.js --url=https://www.kjell.com/se/produkter/dator --site=kjell --limit=5
-  `);
+async function runCrawler() {
+  try {
+    // Show help if requested
+    if (args.help) {
+      showHelp();
+      return;
+    }
+    
+    // Check for required site parameter
+    if (!args.site && !args.config) {
+      console.error('Error: Please specify a site (--site=kjell) or a config file (--config=path/to/config.json)');
+      showHelp();
+      return;
+    }
+    
+    // Load configuration
+    let siteConfig;
+    
+    if (args.config) {
+      siteConfig = loadConfigFile(args.config);
+    } else {
+      siteConfig = loadSiteConfig(args.site);
+    }
+    
+    // Build crawler configuration
+    const crawlerConfig = {
+      concurrency: args.concurrency ? parseInt(args.concurrency, 10) : 2,
+      delay: args.delay ? parseInt(args.delay, 10) : 1000,
+      maxRetries: args.retries ? parseInt(args.retries, 10) : 3,
+      timeout: args.timeout ? parseInt(args.timeout, 10) : 10000,
+      userAgent: args.useragent || 'SveaProductCrawler/1.0',
+      respectRobotsTxt: args.robots !== 'false',
+      saveToDatabase: args.save === true
+    };
+    
+    console.log('Starting crawler with configuration:');
+    console.log(JSON.stringify(crawlerConfig, null, 2));
+    
+    // Initialize the crawler
+    const crawler = new ProductCrawler(crawlerConfig);
+    await crawler.init();
+    
+    // Determine starting URLs
+    const startUrls = args.url 
+      ? [args.url] 
+      : siteConfig.startUrls || [];
+    
+    console.log(`Starting crawl from: ${startUrls.join(', ')}`);
+    
+    // Set crawl options
+    const options = {
+      limit: args.limit ? parseInt(args.limit, 10) : undefined,
+      debug: args.debug === true
+    };
+    
+    if (options.limit) {
+      console.log(`Limiting crawl to ${options.limit} products`);
+    }
+    
+    // Run the crawler
+    const products = await crawler.crawl(startUrls, siteConfig, options);
+    
+    console.log(`Found ${products.length} products`);
+    
+    // Save results if requested
+    if (args.output) {
+      await saveResults(products, args.output);
+    }
+    
+    // Call the extract-products.js fallback script for HTML files
+    // This is now integrated in the crawler's extractProductsFromSavedHTML method
+    if (products.length === 0 && fs.existsSync(path.join(process.cwd(), 'src/scripts/extract-products.js'))) {
+      console.log('No products found, running extract-products.js fallback...');
+      const { execSync } = require('child_process');
+      execSync('node src/scripts/extract-products.js', { stdio: 'inherit' });
+    }
+    
+  } catch (error) {
+    console.error('Crawler error:', error.message);
+    process.exit(1);
+  }
 }
 
 // Run the crawler

@@ -1,16 +1,34 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 /**
  * Login Form Component
  * Allows users to sign in to their account
  */
 export default function LoginForm({ onSuccess, redirectTo }) {
-  const { signIn, signInWithProvider } = useAuth();
+  const { signIn, signInWithProvider, isAuthenticated, user } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Get the returnUrl from query params if it exists
+  const searchParams = new URLSearchParams(location.search);
+  const returnUrl = searchParams.get('returnUrl') || '/dashboard';
+
+  console.log('LoginForm rendered, returnUrl:', returnUrl);
+  console.log('Current auth state:', { isAuthenticated, user });
+
+  // Effect for redirecting if user is already authenticated
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      console.log('User is already authenticated, redirecting to:', returnUrl);
+      navigate(returnUrl, { replace: true });
+    }
+  }, [isAuthenticated, user, navigate, returnUrl]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,18 +45,26 @@ export default function LoginForm({ onSuccess, redirectTo }) {
     // Proceed with login
     try {
       setLoading(true);
+      console.log('Submitting login form, will redirect to:', returnUrl);
       
-      const { success, error: resultError } = await signIn(email, password);
+      const { success, error: resultError, data } = await signIn(email, password);
+      console.log('Login response:', { success, error: resultError, data });
       
       if (success) {
+        console.log('Login successful, redirecting to:', returnUrl);
+        
         // Call the onSuccess callback if provided
         if (onSuccess) {
           onSuccess();
         }
+        
+        // Redirect to dashboard or the returnUrl after successful login
+        navigate(returnUrl, { replace: true });
       } else {
         setError(resultError || 'Invalid email or password');
       }
     } catch (err) {
+      console.error('Login form error:', err);
       setError(err.message || 'An unexpected error occurred');
     } finally {
       setLoading(false);

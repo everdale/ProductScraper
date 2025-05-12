@@ -1,35 +1,66 @@
 /**
  * Dashboard Component
  * 
- * Example component for a protected dashboard page
+ * Main dashboard for the application showing available features
  */
 
 import React from 'react';
-import { useAuth } from '../components/auth';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../components/auth';
+import Layout from './Layout';
+
+const FeatureCard = ({ title, description, icon, link }) => (
+  <div className="feature-card">
+    <div className="feature-icon">{icon}</div>
+    <h3>{title}</h3>
+    <p>{description}</p>
+    <Link to={link} className="feature-link">
+      Open
+    </Link>
+  </div>
+);
 
 const Dashboard = () => {
-  const { user, profile, signOut } = useAuth();
+  const { user, profile } = useAuth();
+
+  const features = [
+    {
+      title: 'Product Crawler',
+      description: 'Extract product data from e-commerce websites',
+      icon: '🕸️',
+      link: '/crawler'
+    },
+    {
+      title: 'Profile',
+      description: 'Manage your account settings and preferences',
+      icon: '👤',
+      link: '/profile'
+    },
+    // Add more features as needed
+  ];
 
   return (
-    <div className="dashboard-container">
-      <h1>Dashboard</h1>
-      <div className="dashboard-welcome">
-        <h2>Welcome, {profile?.first_name || user?.email}</h2>
-        <p>You are now logged in and can access protected features.</p>
-      </div>
+    <Layout>
+      <div className="dashboard-container">
+        <div className="dashboard-welcome">
+          <h1>Dashboard</h1>
+          <h2>Welcome, {profile?.first_name || user?.email}</h2>
+          <p>Select a feature to get started</p>
+        </div>
 
-      <div className="dashboard-actions">
-        <Link to="/profile" className="dashboard-link">Edit Profile</Link>
-        <button onClick={signOut} className="signout-button">Sign Out</button>
+        <div className="features-grid">
+          {features.map((feature, index) => (
+            <FeatureCard
+              key={index}
+              title={feature.title}
+              description={feature.description}
+              icon={feature.icon}
+              link={feature.link}
+            />
+          ))}
+        </div>
       </div>
-
-      <div className="dashboard-content">
-        <h3>Your Activity</h3>
-        <p>This is a placeholder for your dashboard content.</p>
-        <p>Build your application specific features here!</p>
-      </div>
-    </div>
+    </Layout>
   );
 };
 

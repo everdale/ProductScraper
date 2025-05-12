@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model CrawlerSite {
+  id                Int      @id @default(autoincrement())
+  name              String
+  url               String
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+  status            String   @default("pending") // pending, active, paused, error
+  last_crawled      DateTime?
+  respect_robots    Boolean  @default(true)
+  crawl_frequency   Int      @default(24) // hours between crawls
+  max_pages         Int      @default(100)
+  rate_limit        Int      @default(1) // requests per second
+  selectors         CrawlerSelectors?
+  products          Product[]
+  crawl_logs        CrawlLog[]
+}
+
+model CrawlerSelectors {
+  id                Int      @id @default(autoincrement())
+  site_id           Int      @unique
+  site              CrawlerSite @relation(fields: [site_id], references: [id], onDelete: Cascade)
+  product_list      String   // CSS selector for product list container
+  product_link      String   // CSS selector for product links within list
+  pagination_next   String?  // CSS selector for "next page" button
+  prod_name         String   // Product page: name selector
+  prod_price        String   // Product page: price selector
+  prod_description  String?  // Product page: description selector
+  prod_image        String?  // Product page: image selector
+  prod_specs        String?  // Product page: specifications selector
+  custom_selectors  String?  // For additional custom fields (as JSON string in SQLite)
+}
+
+model Product {
+  id                Int      @id @default(autoincrement())
+  site_id           Int
+  site              CrawlerSite @relation(fields: [site_id], references: [id])
+  external_id       String?
+  url               String
+  name              String
+  price             Float
+  currency          String   @default("SEK")
+  description       String?
+  specs             String?  // JSON as string in SQLite
+  images            String?  // JSON as string in SQLite (array of image URLs)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+  in_stock          Boolean  @default(true)
+  metadata          String?  // JSON as string in SQLite
+
+  @@unique([site_id, url])
+}
+
+model CrawlLog {
+  id                Int      @id @default(autoincrement())
+  site_id           Int
+  site              CrawlerSite @relation(fields: [site_id], references: [id])
+  start_time        DateTime @default(now())
+  end_time          DateTime?
+  status            String   // success, error, in_progress
+  pages_crawled     Int      @default(0)
+  products_found    Int      @default(0)
+  products_added    Int      @default(0)
+  products_updated  Int      @default(0)
+  error_message     String?
+  metadata          String?  // JSON as string in SQLite
+} 

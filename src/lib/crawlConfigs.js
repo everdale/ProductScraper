@@ -16,45 +16,39 @@ const kjellConfig = {
   priceFormat: 'european', // Uses comma as decimal separator
   
   // URL patterns
-  productUrlPattern: '/(sv|en)/products/', // Regex pattern to identify product pages
+  productUrlPattern: '/(sv|en|se)/produkt', // Regex pattern to identify product pages
   followPagination: true, // Whether to follow pagination links
   
-  // CSS selectors for extracting data
-  selectors: {
-    // Product listing page selectors
-    productLinks: '.product-list-item a.product-list-item__link, .product-grid-item a.product-grid-item__link',
-    paginationLinks: '.pagination a[href]',
-    
-    // Product detail page selectors
-    name: 'h1.product-title',
-    price: '.product-price-component .price',
-    description: '.product-information__description',
-    imageUrl: '.product-gallery__image img, .product-gallery-slider__image img',
-    
-    // Product specifications
-    specifications: '.product-specifications tr',
-    specLabel: 'th',
-    specValue: 'td'
-  },
-  
-  // Starting URLs for crawling
+  // Starting URLs
   startUrls: [
     'https://www.kjell.com/se/produkter/dator/datorkomponenter',
     'https://www.kjell.com/se/produkter/hem-kontor/kontorsbelysning'
-  ]
+  ],
+  
+  // CSS selectors for extracting data (updated for 2023 website structure)
+  selectors: {
+    // Product listing page selectors
+    productLinks: 'a[data-test-id][href*="produkt"], a[data-scope-link][href*="produkt"], a[href*="produkt"]',
+    pagination: 'a.pagination__link, a[href*="page="], a[href*="sida="]',
+    
+    // Product detail page selectors
+    productName: 'h1.product-name, .product-header__name, [data-test-id="product-name"]',
+    productPrice: '.product-price, .product-header__price, [data-test-id="product-price"]',
+    productDescription: '.product-description, .product-information__description, [data-test-id="product-description"]',
+    productImage: '.product-image img, .product-gallery__main-image img, [data-test-id="product-image"] img',
+    
+    // Product specifications
+    specifications: '.product-specifications__item, .product-data li, .product-specs tr',
+    specLabel: '.product-specifications__label, .product-data__label, .product-specs th',
+    specValue: '.product-specifications__value, .product-data__value, .product-specs td'
+  }
 };
 
 /**
- * Available crawler configurations
+ * Export available configurations
  */
 const availableConfigs = {
-  kjell: kjellConfig,
-  // Add more configurations for other sites here
+  kjell: kjellConfig
 };
 
-module.exports = {
-  kjellConfig,
-  availableConfigs
-};
-
-module.exports.default = availableConfigs; 
+export { availableConfigs }; 
